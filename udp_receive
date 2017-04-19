@@ -1,0 +1,24 @@
+#this code runs on a raspberry pi and receives artnet from another computer and forwards it onto the ethernet/dmx bridge device
+#this is useful for viewing the artnet hex codes generated
+
+import socket
+from binascii import hexlify
+
+UDP_PORT = 6454						#common artnet/udp port
+UDP_IP = "192.168.1.105"  #IP of the raspberry pi
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind((UDP_IP, UDP_PORT))
+
+UDP_IP_to = "192.168.1.250"  #IP of your ethernet/dmx bridge
+
+
+while True:
+	data, addr = sock.recvfrom(1024)
+	hex = hexlify(data)
+	num = int(hex,16)
+	print hex
+	print " "
+	#":".join("{:02x}".format(ord(c)) for c in data)
+	#print (data)
+	sock.sendto(data, (UDP_IP_to, UDP_PORT))
